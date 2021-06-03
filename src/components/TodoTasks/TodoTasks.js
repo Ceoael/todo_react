@@ -1,5 +1,5 @@
-import React, { createRef } from 'react';
-import {CSSTransition, TransitionGroup} from 'react-transition-group';
+import React from 'react';
+import {AnimatePresence, motion} from 'framer-motion';
 
 import TodoFilter from './TodoFilter/TodoFilter';
 import TodoTask from './TodoTask/TodoTask';
@@ -13,43 +13,34 @@ const TodoTasks = ({
         taskListDeleteHandler,
         turnOnModalHandler}) => {
 
+    const animations = {
+        initial: {opacity: 0},
+        animate: {opacity: 1},
+        exit: {opacity: 0},
+        transition: {duration: .500, transition: 'ease-in-out'}
+    }
     
     return (
         <div className={classes.TodoTasks}>
             <TodoFilter setFilterBy={setFilterBy}/>
-
-            <TransitionGroup
-                component={null} 
-            >
                 { taskList.map((task)=>{
-                const taskRef = createRef(null);
-                return (<CSSTransition
-                    nodeRef={taskRef}
-                    classNames= {{
-                        enter: classes['TodoTasks__Task--enter'],
-                        enterActive: classes['TodoTasks__Task--enterActive'],
-                        exit: classes['TodoTasks__Task--exit'],
-                        exitActive: classes['TodoTasks__Task--exitActive']
-                    }}
-                    key={task.id}
-                    timeout={300}>
-                        <div ref={taskRef}>
-                        <TodoTask
-                            turnOnModalHandler={turnOnModalHandler}
-                            taskListDoneHandler={taskListDoneHandler}
-                            taskListDeleteHandler={taskListDeleteHandler}
-                            key={task.id} 
-                            id={task.id} 
-                            status={task.status} 
-                            taskDescription={task.description}
-                            addedDate={task.addedDate}
-                            finishedDate={task.finishedDate}/>
-                        </div>
-                    </CSSTransition>
-                )
-        })}
-            </TransitionGroup>
-
+                return (
+                    <AnimatePresence>
+                        <motion.div {...animations} layout>
+                            <TodoTask
+                                turnOnModalHandler={turnOnModalHandler}
+                                taskListDoneHandler={taskListDoneHandler}
+                                taskListDeleteHandler={taskListDeleteHandler}
+                                key={task.id} 
+                                id={task.id} 
+                                status={task.status} 
+                                taskDescription={task.description}
+                                addedDate={task.addedDate}
+                                finishedDate={task.finishedDate}/>
+                        </motion.div>
+                    </AnimatePresence>
+                )})
+                }
         </div>
     )
 }
